@@ -125,3 +125,16 @@ pub fn get_n_primes(n: u64) -> Vec<u64>
 
     return primes;
 }
+
+pub fn get_primes_less(n: u64) -> Vec<u64>
+{
+    let     sieve = sieve(n);
+    let mut primes: Vec<u64> = Vec::new();
+
+    for (index, value) in sieve.iter().enumerate()
+    {
+        if *value == true { primes.push(index as u64); }
+    }
+
+    return primes;
+}
