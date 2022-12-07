@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-
 extern crate num;
 
 mod euler;
-mod p10;
+mod p11;
 
-fn main()
+
+fn main()  
 {
-    p10::p10();
+    p11::p11();
 }
