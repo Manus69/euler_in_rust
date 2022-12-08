@@ -1,7 +1,32 @@
 
 #[allow(dead_code)]
 
-pub fn get_prime_factors(n: u64) -> Vec<u64>
+use num;
+
+pub fn factor_tuple(n: u64) -> Vec<(u64, u64)>
+{
+    let mut factor_tuples: Vec<(u64, u64)> = Vec::new();
+    let mut p = 2;
+    let mut n = n;
+    let mut tuple: (u64, u64);
+
+    while p <= n
+    {
+        tuple = (p, 0);
+        while n % p == 0
+        {
+            tuple.1 += 1;
+            n = n / p;
+        }
+
+        if tuple.1 > 0 { factor_tuples.push(tuple); }
+        p += 1;
+    }
+
+    return factor_tuples;
+}
+
+pub fn factor(n: u64) -> Vec<u64>
 {
     let mut factors: Vec<u64> = Vec::new();
     let mut max = n;
@@ -18,7 +43,7 @@ pub fn get_prime_factors(n: u64) -> Vec<u64>
         p += 1;
     }
 
-    return  factors;
+    return factors;
 }
 
 pub fn gcd(numbers: &[u64]) -> u64
@@ -137,4 +162,22 @@ pub fn get_primes_less(n: u64) -> Vec<u64>
     }
 
     return primes;
+}
+
+pub fn triangular_number(n: u64) -> u64
+{
+    return n * (n + 1) / 2;
+}
+
+pub fn count_divisors(n: u64) -> u64
+{
+    let     factors = factor_tuple(n);
+    let mut count = 1;
+
+    for tuple in factors
+    {
+        count *= tuple.1 + 1;
+    }
+
+    return count;
 }
