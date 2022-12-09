@@ -1,7 +1,8 @@
+extern crate num_cpus;
+
 use std::thread::{JoinHandle};
 
 const N: u64 = 1_000_000;
-const N_THREADS: usize = 8;
 
 fn collatz_length_naive(n: u64) -> u64
 {
@@ -42,14 +43,15 @@ fn compute_max_in_slice(low: u64, high: u64) -> (u64, u64)
 
 pub fn p14()
 {
+    let     n_cpus = num_cpus::get();
     let mut threads: Vec<JoinHandle<_>> = Vec::new();
     let mut results: Vec<(u64, u64)> = Vec::new();
 
-    let     step: u64 = N / N_THREADS as u64;
+    let     step: u64 = N / n_cpus as u64;
     let mut low: u64 = 1;
     let mut high: u64 = low + step;
 
-    for _n in 0..N_THREADS
+    for _n in 0..n_cpus
     {
         threads.push(std::thread::spawn(move || compute_max_in_slice(low, high)));
         low = high + 1;
