@@ -181,3 +181,29 @@ pub fn count_divisors(n: u64) -> u64
 
     return count;
 }
+
+pub fn divisors(n: u64) -> Vec<u64>
+{
+    assert!(n != 0);
+
+    let mut divisors: Vec<u64> = Vec::new();
+    let mut d: u64 = 2;
+
+    if n == 1 { return vec![1]; }
+
+    divisors.push(1);
+    divisors.push(n);
+    
+    while d * d < n
+    {
+        if n % d == 0 
+        {
+            divisors.push(d);
+            divisors.push(n / d);
+        }
+        
+        d += 1;
+    }
+
+    return divisors;
+}
