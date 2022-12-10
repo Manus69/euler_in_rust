@@ -1,19 +1,27 @@
 
+use std::collections::HashSet;
+
 use crate::euler;
 
-fn compute_sums(N: usize) -> Vec<u64>
-{
-    let mut sums: Vec<u64> = vec![0; N];
-
-    for k in 0..N
-    {
-
-    }
-
-    return sums;
-}
+const N: usize = 10_000;
 
 pub fn p21()
 {
-    println!("{:?}", euler::divisors(284));
+    let mut friends: HashSet<u64> = HashSet::new();
+    let mut sum: u64;
+    
+    for n in 1..N
+    { 
+        sum = euler::divisors(n as u64).iter().sum();
+
+        if euler::divisors(sum).iter().sum::<u64>() == n as u64
+        {
+            if sum != n as u64
+            {
+                friends.insert(n as u64);
+            }
+        }
+    }
+    // println!("{:?}", friends);
+    println!("{}", friends.iter().sum::<u64>());
 }

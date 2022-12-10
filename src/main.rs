@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 
 mod euler;
-mod p21;
+mod p22;
 
 fn main()  
 {
-    p21::p21();
+    p22::p22();
 }

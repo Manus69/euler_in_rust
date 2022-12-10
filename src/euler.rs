@@ -1,5 +1,6 @@
 
 #[allow(dead_code)]
+use std::collections::HashSet;
 
 use num;
 
@@ -182,28 +183,25 @@ pub fn count_divisors(n: u64) -> u64
     return count;
 }
 
-pub fn divisors(n: u64) -> Vec<u64>
+pub fn divisors(n: u64) -> HashSet<u64>
 {
     assert!(n != 0);
 
-    let mut divisors: Vec<u64> = Vec::new();
+    let mut set = HashSet::new();
     let mut d: u64 = 2;
 
-    if n == 1 { return vec![1]; }
+    set.insert(1);
 
-    divisors.push(1);
-    divisors.push(n);
-    
-    while d * d < n
+    while d * d <= n
     {
-        if n % d == 0 
+        if n % d == 0
         {
-            divisors.push(d);
-            divisors.push(n / d);
+            set.insert(d);
+            set.insert(n / d);
         }
-        
+
         d += 1;
     }
 
-    return divisors;
+    return set;
 }
