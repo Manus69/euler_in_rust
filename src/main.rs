@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 
 mod euler;
-mod p25;
+mod decimal;
+mod p26;
 
 fn main()  
 {
-    p25::p25();
+    p26::p26();
 }
