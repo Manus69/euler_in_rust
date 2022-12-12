@@ -1,6 +1,7 @@
 
 #[allow(dead_code)]
 use std::collections::HashSet;
+use std::vec;
 
 use num;
 
@@ -204,4 +205,40 @@ pub fn divisors(n: u64) -> HashSet<u64>
     }
 
     return set;
+}
+
+fn _find_index<T>(vector: &Vec<T>) -> Option<usize>
+where T: Ord
+{
+    for k in (1..vector.len()).rev()
+    {
+        if vector[k - 1] < vector[k] { return Some(k - 1);}
+    }
+    
+    return None;
+}
+
+fn _find_first_greater<T>(vector: &Vec<T>, index: usize) -> Option<usize>
+where T: Ord
+{
+    for k in (index..vector.len()).rev()
+    {
+        if vector[k] >= vector[index] { return Some(k);}
+    }
+
+    return None;
+}
+
+pub fn permute<T>(vector: &mut Vec<T>)
+where T: Ord
+{
+    if vector.len() < 2 { return; }
+
+    let index = _find_index(vector);
+    if index.is_none() { return vector.reverse(); }
+    let index = index.unwrap();
+    let right_index = _find_first_greater(vector, index).unwrap();
+
+    vector.swap(index, right_index);
+    vector[index + 1..].reverse();
 }
