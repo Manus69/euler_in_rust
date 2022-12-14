@@ -229,16 +229,52 @@ where T: Ord
     return None;
 }
 
-pub fn permute<T>(vector: &mut Vec<T>)
+pub fn permute<T>(vector: &mut Vec<T>) -> bool
 where T: Ord
 {
-    if vector.len() < 2 { return; }
+    if vector.len() < 2 { return false; }
 
     let index = _find_index(vector);
-    if index.is_none() { return vector.reverse(); }
+    if index.is_none()
+    {
+        vector.reverse();
+        return false;
+    }
+
     let index = index.unwrap();
     let right_index = _find_first_greater(vector, index).unwrap();
 
     vector.swap(index, right_index);
     vector[index + 1..].reverse();
+
+    return true;
+}
+
+pub fn factorial(n: u64) -> Option<u64>
+{
+    return match n
+    {
+        0 =>  Some(1),
+        1 =>  Some(1),
+        2 =>  Some(2),
+        3 =>  Some(6),
+        4 =>  Some(24),
+        5 =>  Some(120),
+        6 =>  Some(720),
+        7 =>  Some(5040),
+        8 =>  Some(40320),
+        9 =>  Some(362880),
+        10 => Some(3628800),
+        11 => Some(39916800),
+        12 => Some(479001600),
+        13 => Some(6227020800),
+        14 => Some(87178291200),
+        15 => Some(1307674368000),
+        16 => Some(20922789888000),
+        17 => Some(355687428096000),
+        18 => Some(6402373705728000),
+        19 => Some(121645100408832000),
+        20 => Some(2432902008176640000),
+        _ => None
+    }
 }
