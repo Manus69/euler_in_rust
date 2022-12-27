@@ -2,13 +2,9 @@
 
 mod euler;
 mod decimal;
-mod p33;
-
-mod tiling;
+mod p36;
 
 fn main()  
 {
-    p33::p33();
-
-    // tiling::tiling(10);
+    p36::p36();
 }

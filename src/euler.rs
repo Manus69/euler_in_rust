@@ -264,3 +264,8 @@ pub fn factorial(n: u64) -> Option<u64>
         false => Some(VALUES[n as usize])
     }
 }
+
+pub fn n_digits(n: u64) -> usize
+{
+    return (n as f64).log10() as usize + 1;
+}
