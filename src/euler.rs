@@ -269,3 +269,18 @@ pub fn n_digits(n: u64) -> usize
 {
     return (n as f64).log10() as usize + 1;
 }
+
+pub fn is_prime(n: u64) -> bool
+{
+    let mut p = 2;
+
+    if n < 2 {return false}
+
+    while p * p <= n
+    {
+        if n % p == 0 {return false}
+        p += 1;
+    }
+
+    return true;
+}
