@@ -2,8 +2,9 @@
 #[allow(dead_code)]
 use std::collections::HashSet;
 use std::vec;
-
 use num;
+
+pub type Sieve = Vec<bool>;
 
 pub fn factor_tuple(n: u64) -> Vec<(u64, u64)>
 {
@@ -283,4 +284,18 @@ pub fn is_prime(n: u64) -> bool
     }
 
     return true;
+}
+
+pub fn is_prime_sieve(n: u64, sieve: &Vec<bool>) -> bool
+{
+    return match n as usize >= sieve.len()
+    {
+        false => sieve[n as usize],
+        _ => is_prime(n)
+    }
+}
+
+pub fn is_square(n: u64) -> bool
+{
+    return (n as f64).sqrt().fract() == 0.0;
 }
