@@ -3,9 +3,9 @@
 mod euler;
 mod decimal;
 // mod p53;
-mod p58;
+mod p59;
 
 fn main()  
 {
-    p58::p58();
+    p59::p59();
 }
