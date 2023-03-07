@@ -62,5 +62,6 @@ pub fn p59()
     }
 
     result = descipher(&bytes, &frequent_values);
-    println!("{}", str::from_utf8(&result).unwrap());
+    // println!("{}", str::from_utf8(&result).unwrap());
+    println!("{}", result.iter().fold(0u64, |acc, x| acc + (*x as u64)));
 }

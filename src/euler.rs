@@ -83,12 +83,12 @@ pub fn lcm(numbers: &[u64]) -> u64
     return num::integer::lcm(_lcm, _rhs_lcm);
 }
 
-pub fn prime_count_lower_bound(n: u64) -> u64
+pub fn prime_count_lower_bound(n: usize) -> usize
 {
-    return (n as f64 / (n as f64).ln()) as u64;
+    return (n as f64 / (n as f64).ln()) as usize;
 }
 
-pub fn prime_count_upper_bound(n: u64) -> u64
+pub fn prime_count_upper_bound(n: usize) -> usize
 {
     return 2 * prime_count_lower_bound(n);
 }
@@ -104,7 +104,7 @@ fn _remove_multiples(numbers: &mut [bool], step: usize)
     }
 }
 
-pub fn sieve(n: u64) -> Vec<bool>
+pub fn sieve(n: usize) -> Vec<bool>
 {
     assert!(n > 2);
 
@@ -127,7 +127,7 @@ pub fn sieve(n: u64) -> Vec<bool>
     return _sieve;
 }
 
-fn _compute_sieve_size(prime_count: u64) -> u64
+fn _compute_sieve_size(prime_count: usize) -> usize
 {
     let mut size = prime_count * 2;
 
@@ -139,7 +139,7 @@ fn _compute_sieve_size(prime_count: u64) -> u64
     return size;
 }
 
-pub fn get_n_primes(n: u64) -> Vec<u64>
+pub fn get_n_primes(n: usize) -> Vec<u64>
 {
     let     size = _compute_sieve_size(n);
     let     sieve = sieve(size);
@@ -169,7 +169,7 @@ pub fn get_primes_less_sieve(n: u64, sieve: &Sieve) -> Vec<u64>
 
 pub fn get_primes_less(n: u64) -> Vec<u64>
 {
-    let sieve = sieve(n);
+    let sieve = sieve(n as usize);
 
     return get_primes_less_sieve(n, &sieve);
 }
