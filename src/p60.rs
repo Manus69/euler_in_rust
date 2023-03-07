@@ -1,10 +1,9 @@
-use num::traits::Pow;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use crate::euler::{self, Sieve, is_prime_sieve};
 
-const MAX: usize = 1 << 22;
+const MAX: usize = 10_000_000;
 
 fn concat(lhs: u64, rhs: u64) -> u64
 {
@@ -16,6 +15,30 @@ fn is_concat_prime(p0: u64, p1: u64, sieve: &Sieve) -> bool
     let pair = (concat(p0, p1), concat(p1, p0));
 
     return is_prime_sieve(pair.0, sieve) && is_prime_sieve(pair.1, sieve);
+}
+
+fn _insert_values(map:  &mut BTreeMap<u64, BTreeSet<u64>>, p: u64, q: u64)
+{
+    map.entry(p).or_insert(BTreeSet::from([q])).insert(q);
+    map.entry(q).or_insert(BTreeSet::from([p])).insert(p);
+}
+
+fn map_primes2(primes: &Vec<u64>, sieve: &Sieve) -> BTreeMap<u64, BTreeSet<u64>>
+{
+    let mut map = BTreeMap::new();
+
+    for (index, &p) in primes.iter().enumerate()
+    {
+        for &q in &primes[index + 1..]
+        {
+            if is_concat_prime(p, q, sieve)
+            {
+                _insert_values(&mut map, p, q);
+            }
+        } 
+    }
+
+    return map;
 }
 
 fn map_primes(primes: &Vec<u64>, sieve: &Sieve) -> BTreeMap<u64, BTreeSet<u64>>
@@ -88,16 +111,17 @@ fn find_subset(map: &BTreeMap<u64, BTreeSet<u64>>, length: usize) -> Option<Vec<
 
 pub fn p60()
 {
-    //this is a hard problem
     let sieve = euler::sieve(MAX);
-    let primes = euler::get_primes_less_sieve(10000 as u64, &sieve);
+    let primes = euler::get_primes_less_sieve(10_000 as u64, &sieve);
 
-    let map = map_primes(&primes, &sieve);
+    // let map = map_primes(&primes, &sieve);
+    let map = map_primes2(&primes, &sieve);
+
 
 //    println!("{:? \n}", map);
-   println!("{}", map.len());
+//    println!("{}", map.len());
 
-    // let set = find_subset(&map, 5);
-    // println!("{:?}", set);
-    // if set.is_some() {println!("{}", set.unwrap().iter().sum::<u64>());}
+    let set = find_subset(&map, 5);
+    println!("{:?}", set);
+    if set.is_some() {println!("{}", set.unwrap().iter().sum::<u64>());}
 }
