@@ -273,9 +273,10 @@ pub fn factorial(n: u64) -> Option<u64>
     }
 }
 
-pub fn n_digits(n: u64) -> usize
+pub fn n_digits(n: u64) -> u32
 {
-    return (n as f64).log10() as usize + 1;
+    // return (n as f64).log10() as usize + 1;
+    return n.ilog10() + 1;
 }
 
 pub fn is_prime(n: u64) -> bool

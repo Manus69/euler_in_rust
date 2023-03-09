@@ -7,7 +7,7 @@ const MAX: usize = 10_000_000;
 
 fn concat(lhs: u64, rhs: u64) -> u64
 {
-    return lhs * (10u64).pow(euler::n_digits(rhs) as u32) + rhs;
+    return lhs * (10u64).pow(euler::n_digits(rhs)) + rhs;
 }
 
 fn is_concat_prime(p0: u64, p1: u64, sieve: &Sieve) -> bool
@@ -113,6 +113,7 @@ pub fn p60()
 {
     let sieve = euler::sieve(MAX);
     let primes = euler::get_primes_less_sieve(10_000 as u64, &sieve);
+
 
     // let map = map_primes(&primes, &sieve);
     let map = map_primes2(&primes, &sieve);
