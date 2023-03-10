@@ -2,10 +2,9 @@
 
 mod euler;
 mod decimal;
-mod p61;
-mod p62;
+mod p63;
 
 fn main()  
 {
-    p62::p62();
+    p63::p63();
 }
