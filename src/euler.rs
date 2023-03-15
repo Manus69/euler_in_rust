@@ -1,6 +1,7 @@
 
 #[allow(dead_code)]
 use std::collections::HashSet;
+use std::collections::BTreeSet;
 use std::vec;
 use num;
 
@@ -306,4 +307,37 @@ pub fn is_prime_sieve(n: u64, sieve: &Vec<bool>) -> bool
 pub fn is_square(n: u64) -> bool
 {
     return (n as f64).sqrt().fract() == 0.0;
+}
+
+pub fn C(n: usize, k:usize) -> usize
+{
+    return (0..k).map(|_k| n - _k).fold(1, |acc, item| acc * item);
+}
+
+fn _get_index(n: usize, k: usize, choice_index: usize, index_set: &BTreeSet<usize>) -> usize
+{
+    let n_combinations = C(n, k);
+    let frame_size = n_combinations / n;
+    let index = (choice_index % n_combinations) / frame_size;
+
+    return *index_set.range(0..).nth(index).unwrap();
+}
+
+pub fn choose<T>(set: & [T], n_items: usize, choice_index: usize) -> Vec<T>
+where T: Clone
+{
+    let mut n = set.len();
+    let mut result: Vec<T> = Vec::new();
+    let mut index_set: BTreeSet<usize> = BTreeSet::from_iter(0..n);
+    let mut index;
+
+    for k in (1..n_items + 1).rev()
+    {
+        index = _get_index(n, k, choice_index, &index_set);
+        result.push(set[index].clone());
+        index_set.remove(&index);
+        n -= 1;
+    }
+
+    return result;
 }
