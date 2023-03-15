@@ -1,5 +1,6 @@
-use std::{ops::{Add, Index, IndexMut}, fmt::format, collections::BTreeSet, iter::Sum, process::Output};
+use std::{ops::{Index, IndexMut}, collections::BTreeSet};
 use num::Zero;
+use crate::euler;
 
 const N: usize = 3;
 
@@ -7,6 +8,7 @@ const N: usize = 3;
 struct NGon<T>
 {
     values: Vec<T>,
+    used: BTreeSet<T>,
     current_cell: Option<usize>,
 }
 
@@ -15,7 +17,7 @@ where T: Zero + Copy + Ord + ToString
 {
     pub fn new(n_sides: usize) -> Self
     {
-        return NGon { values: vec![T::zero(); 2 * n_sides], current_cell: Some(0) };
+        return NGon { values: vec![T::zero(); 2 * n_sides], used: BTreeSet::new(), current_cell: Some(0) };
     }
 
     pub fn init(& mut self, slice: &[T])
@@ -26,9 +28,23 @@ where T: Zero + Copy + Ord + ToString
         }
     }
 
-    pub fn n_sides(&self) -> usize
+    pub fn from_slice(n_sides: usize, slice: & [T]) -> NGon<T>
+    {
+        let mut n_gon: NGon<T> = NGon::new(n_sides);
+
+        n_gon.init(slice);
+
+        return n_gon;
+    }
+
+    pub fn n_sides(& self) -> usize
     {
         return self.values.len() / 2;
+    }
+
+    pub fn n_cells(& self) -> usize
+    {
+        return self.values.len();
     }
 
     pub fn is_internal_index(& self, index: usize) -> bool
@@ -39,6 +55,15 @@ where T: Zero + Copy + Ord + ToString
     pub fn side(& self, n: usize) -> Vec<T>
     {
         return vec![self[self.n_sides() + n], self[n], self[(n + 1) % self.n_sides()]];
+    }
+
+    pub fn current_side_index(& self) -> Option<usize>
+    {
+        return match self.current_cell
+        {
+            Some(index) => Some(index % self.n_sides()),
+            None => None,
+        }
     }
 
     pub fn next_cell(& mut self)
@@ -59,6 +84,7 @@ where T: Zero + Copy + Ord + ToString
         let current_cell = self.current_cell.unwrap();
 
         self[current_cell] = value;
+        self.used.insert(value);
         self.next_cell();
     }
 
@@ -102,7 +128,7 @@ impl<T> Index<usize> for NGon<T>
 {
     type Output = T;
 
-    fn index(&self, index: usize) -> &Self::Output
+    fn index(&self, index: usize) -> & Self::Output
     {
         return &self.values[index];
     }
@@ -116,55 +142,90 @@ impl<T> IndexMut<usize> for NGon<T>
     }
 }
 
-use crate::euler;
-use std::collections;
-
-fn C(n: usize, k: usize) -> usize
+fn compute_value(n_gon: & NGon<i32>, side_index: usize, target: i32) -> i32
 {
-    let top = euler::factorial(n as u64).unwrap();
-    let bot = euler::factorial((n - k) as u64).unwrap();
-
-    return (top / bot) as usize;
+    return target - n_gon.side(side_index).iter().sum::<i32>();
 }
 
-fn get_index(n: usize, k: usize, perm_index: usize, index_set: & BTreeSet<usize>) -> usize
+fn solve_external(mut n_gon: NGon<i32>, target: i32) -> Option<NGon<i32>>
 {
-    let n_combinations = C(n, k);
-    let perm_index = perm_index % n_combinations;
-    let frame_size = n_combinations / n;
-    let index = perm_index / frame_size;
-    
-    return *index_set.range(0..).nth(index).unwrap();
-}
+    let side_index;
+    let value;
 
-fn choose(sequence: & [i32], k: usize, perm_index: usize) -> Vec<i32>
-{
-    if sequence.len() == 0 || sequence.len() < k {return Vec::new();}
+    if n_gon.is_filled() {return Some(n_gon);}
 
-    let mut values: Vec<i32> = Vec::new();
-    let mut indicies: BTreeSet<usize> = BTreeSet::from_iter(0..sequence.len());
-    let mut n = sequence.len();
-    let mut current_index;
+    side_index = n_gon.current_side_index().unwrap();
+    value = compute_value(&n_gon, side_index, target);
 
-    for _k in (1..k + 1).rev()
+    if !n_gon.used.contains(&value) && value > 0 && value <= n_gon.n_cells() as i32
     {
-        current_index = get_index(n, _k, perm_index, &indicies);
-        values.push(sequence[current_index]);
-        indicies.remove(&current_index);
-        n -= 1;
+        n_gon.set_current_cell(value);
+        n_gon.used.insert(value);
+
+        return solve_external(n_gon, target);
     }
-     
-     return values;
+    
+    return None;
 }
 
+fn get_initial_sequences(n_sides: usize) -> Vec<Vec<i32>>
+{
+    let values = (1..=(2 * n_sides as i32)).collect::<Vec<i32>>();
+    let set_size = euler::C(2 * n_sides, n_sides);
+
+    return (0..set_size).
+            map(|p| euler::choose(&values, n_sides, p)).
+            collect::<Vec<Vec<i32>>>();
+}
+
+fn get_solutions(initial_sequences: & [Vec<i32>], n_sides: usize, target: i32) -> Vec<NGon<i32>>
+{
+    let mut solutions: Vec<NGon<i32>> = Vec::new();
+    let mut current: Option<NGon<i32>>;
+
+    for sequence in initial_sequences
+    {
+        current = Some(NGon::from_slice(n_sides, &sequence));
+        current = solve_external(current.unwrap(), target);
+
+        if current.is_some() {solutions.push(current.unwrap());}
+    }
+
+    return solutions;
+}
+
+fn get_target_limits(n_sides: usize) -> (i32, i32)
+{
+    let max_value = 2 * n_sides as i32;
+
+    return (max_value + 3, 3 * max_value - 3);
+}
+
+fn get_all_solutions(n_sides: usize) -> Vec<NGon<i32>>
+{
+    let mut all_solutions: Vec<NGon<i32>> = Vec::new();
+    let (target_min, target_max) = get_target_limits(n_sides);
+    let initial_sequences = get_initial_sequences(n_sides);
+
+    initial_sequences.iter().for_each(|s| println!("{:?}", s));
+    let mut solutions: Vec<NGon<i32>>;
+
+    for target in target_min..target_max
+    {
+        solutions = get_solutions(&initial_sequences, n_sides, target);
+        all_solutions.append(& mut solutions);
+    }
+
+    return all_solutions;
+}
+ 
 pub fn p68()
 {
-    let sequence = [1, 2, 3, 4];
-    for p in 0..20
-    {
-        // let c = choose(&sequence, 3, p);
-        let c = euler::choose(& sequence, 3, p);
-        println!("{:?}", c);
-    }
+    let solutions = get_all_solutions(3);
 
+    let mut solution_strings = solutions.iter().map(|ng| ng.to_string()).collect::<Vec<String>>();
+    // solution_strings.sort();
+    // println!("{:?}", solution_strings);
+
+    // solution_strings.iter().for_each(|s| println!("{}", s));
 }
