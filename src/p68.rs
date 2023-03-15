@@ -1,8 +1,6 @@
-use std::{ops::{Index, IndexMut}, collections::BTreeSet};
+use std::{ops::{Index, IndexMut}, collections::{BTreeSet, HashSet}};
 use num::Zero;
 use crate::euler;
-
-const N: usize = 3;
 
 #[derive(Debug, Clone)]
 struct NGon<T>
@@ -103,8 +101,8 @@ where T: Zero + Copy + Ord + ToString
     pub fn to_values(& self) -> Vec<T>
     {
         let mut values: Vec<T> = Vec::new();
-        // let least_side_index = self._find_index_of_least_side();
-        let least_side_index = 0;
+        let least_side_index = self._find_index_of_least_side();
+        // let least_side_index = 0;
 
         for n in 0..self.n_sides()
         {
@@ -119,7 +117,7 @@ where T: Zero + Copy + Ord + ToString
         return self.to_values().
                     iter().
                     map(|v| T::to_string(v)).
-                    fold(String::new(), |acc, s| format!("{} {}", acc, s));
+                    fold(String::new(), |acc, s| format!("{}{}", acc, s));
     }
 
 }
@@ -168,6 +166,46 @@ fn solve_external(mut n_gon: NGon<i32>, target: i32) -> Option<NGon<i32>>
     return None;
 }
 
+fn rotate_sequence(sequence: & [i32], n: usize) -> Vec<i32>
+{
+    let mut lhs = Vec::from(&sequence[n..]);
+    let mut rhs = Vec::from(&sequence[0..n]);
+    lhs.append(& mut rhs);
+
+    return lhs;
+}
+
+fn register_sequence(sequence: & Vec<i32>, table: & mut HashSet<Vec<i32>>, n_rotations: usize)
+{
+    table.insert(sequence.clone());
+
+    for n in 1..n_rotations
+    {
+        table.insert(rotate_sequence(& sequence, n));
+    }
+}
+
+fn get_initial_sequences_table(n_sides: usize) -> Vec<Vec<i32>>
+{
+    let values = (1..=(2 * n_sides as i32)).collect::<Vec<i32>>();
+    let set_size = euler::C(2 * n_sides, n_sides);
+    let mut table: HashSet<Vec<i32>> = HashSet::new();
+    let mut sequences: Vec<Vec<i32>> = Vec::new();
+    let mut current_sequence: Vec<i32>;
+
+    for n in 0..set_size
+    {
+        current_sequence = euler::choose(&values, n_sides, n);
+        if !table.contains(&current_sequence)
+        {
+            register_sequence(& current_sequence, &mut table, n_sides);
+            sequences.push(current_sequence);
+        }
+    }
+
+    return sequences;
+}
+
 fn get_initial_sequences(n_sides: usize) -> Vec<Vec<i32>>
 {
     let values = (1..=(2 * n_sides as i32)).collect::<Vec<i32>>();
@@ -205,9 +243,9 @@ fn get_all_solutions(n_sides: usize) -> Vec<NGon<i32>>
 {
     let mut all_solutions: Vec<NGon<i32>> = Vec::new();
     let (target_min, target_max) = get_target_limits(n_sides);
-    let initial_sequences = get_initial_sequences(n_sides);
+    // let initial_sequences = get_initial_sequences(n_sides);
+    let initial_sequences = get_initial_sequences_table(n_sides);
 
-    initial_sequences.iter().for_each(|s| println!("{:?}", s));
     let mut solutions: Vec<NGon<i32>>;
 
     for target in target_min..target_max
@@ -221,11 +259,14 @@ fn get_all_solutions(n_sides: usize) -> Vec<NGon<i32>>
  
 pub fn p68()
 {
-    let solutions = get_all_solutions(3);
+    let solutions = get_all_solutions(5);
 
-    let mut solution_strings = solutions.iter().map(|ng| ng.to_string()).collect::<Vec<String>>();
-    // solution_strings.sort();
-    // println!("{:?}", solution_strings);
+    let mut solution_strings = solutions.
+                            iter().
+                            map(|ng| ng.to_string()).
+                            filter(|_str| _str.len() == 16).
+                            collect::<Vec<String>>();
 
-    // solution_strings.iter().for_each(|s| println!("{}", s));
+    solution_strings.sort();
+    println!("{}", solution_strings.last().unwrap());
 }
