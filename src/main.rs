@@ -1,13 +1,13 @@
 #![allow(dead_code)]
+#[allow(non_snake_case)]
 
 mod euler;
 mod decimal;
 mod p66;
-mod p68;
+mod p69;
 
 //return to p66
-//generate C(n,k)?
 fn main()  
 {
-    p68::p68();
+    p69::p69();
 }

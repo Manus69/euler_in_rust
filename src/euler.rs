@@ -7,12 +7,12 @@ use num;
 
 pub type Sieve = Vec<bool>;
 
-pub fn factor_tuple(n: u64) -> Vec<(u64, u64)>
+pub fn factor_tuple(n: u64) -> Vec<(u64, usize)>
 {
-    let mut factor_tuples: Vec<(u64, u64)> = Vec::new();
+    let mut factor_tuples: Vec<(u64, usize)> = Vec::new();
     let mut p = 2;
     let mut n = n;
-    let mut tuple: (u64, u64);
+    let mut tuple: (u64, usize);
 
     while p <= n
     {
@@ -28,6 +28,31 @@ pub fn factor_tuple(n: u64) -> Vec<(u64, u64)>
     }
 
     return factor_tuples;
+}
+
+pub fn factor_tuple_sieve(n: u64, sieve: & Sieve) -> Vec<(u64, usize)>
+{
+    if is_prime_sieve(n, sieve) {return vec![(n, 1)];}
+
+    let mut factor_tuple: Vec<(u64, usize)> = Vec::new();
+    let mut p = 2;
+    let mut n = n;
+    let mut power;
+
+    while p <= n
+    {
+        power = 0;
+        while n % p == 0
+        {
+            power += 1;
+            n /= p;
+        }
+
+        if power > 0 {factor_tuple.push((p, power));}
+        p += 1;
+    }
+
+    return factor_tuple;
 }
 
 pub fn factor(n: u64) -> Vec<u64>
@@ -180,7 +205,7 @@ pub fn triangular_number(n: u64) -> u64
     return n * (n + 1) / 2;
 }
 
-pub fn count_divisors(n: u64) -> u64
+pub fn count_divisors(n: u64) -> usize
 {
     let     factors = factor_tuple(n);
     let mut count = 1;
@@ -341,3 +366,19 @@ where T: Clone
 
     return result;
 }
+
+pub fn phi(n: u64, sieve: Option<& Sieve>) -> usize
+{
+    let factors = match sieve
+    {
+        None => factor_tuple(n),
+        Some(s) => factor_tuple_sieve(n, s),
+    };
+
+    // println!("{:?}", factors);
+    return factors.
+                iter().
+                fold(1, |product, (prime, power)| 
+                    product * (prime.pow(*power as u32 - 1) * (prime - 1))) as usize;
+}
+
