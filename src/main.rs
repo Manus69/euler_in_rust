@@ -4,10 +4,10 @@
 mod euler;
 mod decimal;
 mod p66;
-mod p71;
+mod p75;
 
 //return to p66
 fn main()  
 {
-    p71::p71();
+    p75::p75();
 }

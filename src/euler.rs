@@ -2,7 +2,6 @@
 #[allow(dead_code)]
 use std::collections::HashSet;
 use std::collections::BTreeSet;
-use std::vec;
 use num;
 
 pub type Sieve = Vec<bool>;
@@ -382,3 +381,66 @@ pub fn phi(n: u64, sieve: Option<& Sieve>) -> usize
                     product * (prime.pow(*power as u32 - 1) * (prime - 1))) as usize;
 }
 
+
+fn _fill(divisor_map: & mut [u64], index: usize, value: u64)
+{
+    let mut _index = index << 1;
+
+    while _index < divisor_map.len()
+    {
+        divisor_map[_index] = value;
+        _index += index;
+    }
+}
+
+fn _sieve_divisor(n: u64) -> Vec<u64>
+{
+    let mut divisor_map: Vec<u64> = vec![0; n as usize];
+
+    for index in 2..n as usize
+    {
+        if divisor_map[index] == 0
+        {
+            _fill(& mut divisor_map, index, index as u64);
+        }
+    }
+
+    divisor_map[1] = 1;
+
+    return divisor_map;
+}
+
+
+fn _phi_table(n: u64, divisor_map: & Vec<u64>, table: & mut Vec<u64>) -> u64
+{
+    let divisor = divisor_map[n as usize];
+    let remainder;
+    let result;
+    let gcd;
+    let phi_gcd;
+
+    if divisor == 0 {return n - 1;}
+    if table[n as usize] != 0 {return table[n as usize];}
+
+    remainder = n / divisor;
+    gcd = num::integer::gcd(remainder, divisor);
+    phi_gcd = _phi_table(gcd, divisor_map, table);
+
+    result = (_phi_table(divisor, divisor_map, table) * 
+            _phi_table(remainder, divisor_map, table) *
+            gcd) / phi_gcd;
+
+    table[n as usize] = result;
+
+    return result;
+}
+
+pub fn phi_table(n: u64) -> Vec<u64>
+{
+    let sieve_divisor = _sieve_divisor(n);
+    let mut table: Vec<u64> = vec![0; n as usize];
+
+    table[1] = 1;
+
+    return (2..n).map(|_n| _phi_table(_n, & sieve_divisor, & mut table)).collect::<Vec<u64>>();
+}
