@@ -5,9 +5,10 @@ mod euler;
 mod decimal;
 mod p66;
 mod p76;
+mod p77;
 
 //return to p66
 fn main()  
 {
-    p76::p76();
+    p77::p77();
 }

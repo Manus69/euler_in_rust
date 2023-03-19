@@ -1,6 +1,6 @@
 use std::collections::{BTreeSet, HashMap};
 
-fn n_ways(n: usize, numbers: BTreeSet<usize>, table: & mut HashMap<(usize, BTreeSet<usize>), usize>) -> usize
+pub fn n_ways(n: usize, numbers: BTreeSet<usize>, table: & mut HashMap<(usize, BTreeSet<usize>), usize>) -> usize
 {
     let mut new_set: BTreeSet<usize>;
     let current;
