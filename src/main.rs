@@ -4,11 +4,11 @@
 mod euler;
 mod decimal;
 mod p66;
-mod p76;
-mod p77;
+mod p78;
+mod p79;
 
-//return to p66
+//return to p66 p78
 fn main()  
 {
-    p77::p77();
+    p79::p79();
 }
